@@ -1,4 +1,4 @@
-import times, db_sqlite
+import times, db_sqlite, strutils
 
 type
   User* = object
@@ -29,3 +29,35 @@ proc follow*(database: Database, follower: User, user: User) =
 
 proc create*(database: Database, user: User) =
   database.db.exec(sql"INSERT INTO User VALUES (?);", user.username)   
+
+proc find*(database: Database, username: string, user: var User): bool =
+  let row = database.db.getRow(sql"SELECT username FROM User WHERE follower = ?;", username)
+  if row[0].len == 0: return false
+  else: user.username = row[0]
+
+  let following = database.db.getAllRows(
+    sql"SELECT followed_user FROM Following WHERE follower = ?;", username)  
+
+  user.following = @[]
+  for row in following:
+    if row[0].len != 0:
+      user.following.add(row[0])
+
+  return true
+
+proc findMessages*(database: Database, usernames: seq[string], limit = 10): seq[Message] =                                              
+  result = @[]                                                               
+  if usernames.len == 0: return
+  var whereClause = " WHERE "
+  for i in 0 .. <usernames.len:                                              
+    whereClause.add("username = ? ")
+    if i != <usernames.len:
+      whereClause.add("or ")
+
+  let messages = database.db.getAllRows(                                     
+      sql("SELECT username, time, msg FROM Message" &
+          whereClause &
+          "ORDER BY time DESC LIMIT " & $limit),
+      usernames)
+  for row in messages:                                                       
+    result.add(Message(username: row[0], time: fromSeconds(row[1].parseInt), msg: row[2]))
