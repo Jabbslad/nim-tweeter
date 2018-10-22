@@ -1,3 +1,4 @@
 src/Tweeter
 src/create_database
-tweeter.db
+test/create_database_test
+*.db
