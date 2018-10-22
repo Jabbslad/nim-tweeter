@@ -1,2 +1,3 @@
 src/Tweeter
-bin
+src/create_database
+tweeter.db
