@@ -61,3 +61,33 @@ proc findMessages*(database: Database, usernames: seq[string], limit = 10): seq[
       usernames)
   for row in messages:                                                       
     result.add(Message(username: row[0], time: fromSeconds(row[1].parseInt), msg: row[2]))
+
+proc close*(database: Database) =
+  database.db.close()
+
+
+proc setup*(databse: Database) = 
+  databse.db.exec(sql"""
+    CREATE TABLE IF NOT EXISTS User(
+      username test PRIMARY KEY
+    );
+  """)
+  
+  databse.db.exec(sql"""                                                      
+    CREATE TABLE IF NOT EXISTS Following(                             
+      follower text,                                                  
+      followed_user text,                                             
+      PRIMARY KEY (follower, followed_user)                           
+      FOREIGN KEY (follower) REFERENCES User(username),               
+      FOREIGN KEY (followed_user) REFERENCES User(username)           
+    );
+  """)
+  
+  databse.db.exec(sql"""                                                      
+    CREATE TABLE IF NOT EXISTS Message(                               
+      username text,                                                  
+      time integer,
+      msg text NOT NULL,                                              
+      FOREIGN KEY (username) REFERENCES User(username)                
+    );
+  """)
