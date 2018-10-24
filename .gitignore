@@ -1,5 +1,6 @@
 src/Tweeter
 src/create_database
 src/views/user
+src/views/general
 test/create_database_test
 *.db
