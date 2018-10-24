@@ -1,9 +1,15 @@
-import asyncdispatch
-
-import jester
+import asyncdispatch, 
+  jester, 
+  times, 
+  database, 
+  views/user, 
+  views/general
 
 routes:
   get "/":
-    resp "Hello World!"
+    resp renderMain(renderLogin())
+  post "/login":
+    setCookie("username", @"username", getTime().getGMTime() + 2.hours)
+    redirect("/")
 
 runForever()
