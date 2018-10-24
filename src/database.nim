@@ -30,8 +30,8 @@ proc follow*(database: Database, follower: User, user: User) =
 proc create*(database: Database, user: User) =
   database.db.exec(sql"INSERT INTO User VALUES (?);", user.username)   
 
-proc find*(database: Database, username: string, user: var User): bool =
-  let row = database.db.getRow(sql"SELECT username FROM User WHERE follower = ?;", username)
+proc findUser*(database: Database, username: string, user: var User): bool =
+  let row = database.db.getRow(sql"SELECT username FROM User WHERE username = ?;", username)
   if row[0].len == 0: return false
   else: user.username = row[0]
 
