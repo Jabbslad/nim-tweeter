@@ -1,6 +1,7 @@
 #? stdtmpl(subsChar = '$', metaChar = '#', toString = "xmltree.escape")
 #import "../database"
 #import xmltree
+#import times
 #
 #proc renderUser*(user: User): string =
 # result = ""
@@ -26,6 +27,23 @@
 #
 #end proc
 #
+#proc renderMessages*(messages: seq[Message]): string =
+# result = ""
+<div id="messages">
+  #for message in messages:
+    <div>
+      <a href="/${message.username}">${message.username}</a>
+      <span>${message.time.getGMTime().format("HH:mm MMMM d',' yyyy")}</span>
+      <h3>${message.msg}</h3> 
+    </div>
+  #end for
+</div>
+#
+#end proc
 #when isMainModule:
 #  echo renderUser(User(username: "jamie<>", following: @[]))
+#  echo renderMessages(@[                                                    
+#    Message(username: "d0m96", time: getTime(), msg: "Hello World!"),
+#    Message(username: "d0m96", time: getTime(), msg: "Testing")
+#  ])
 #end when
